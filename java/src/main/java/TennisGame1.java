@@ -1,8 +1,8 @@
 
 public class TennisGame1 implements TennisGame {
     
-    private int m_score1 = 0;
-    private int m_score2 = 0;
+    private int score1 = 0;
+    private int score2 = 0;
     private String player1Name;
     private String player2Name;
 
@@ -12,65 +12,77 @@ public class TennisGame1 implements TennisGame {
     }
 
     public void wonPoint(String playerName) {
-        if (playerName == "player1")
-            m_score1 += 1;
-        else
-            m_score2 += 1;
+        if (playerName == player1Name)
+            score1 ++;
+        if (playerName == player2Name)
+            score2 ++;
     }
 
     public String getScore() {
-        String score = "";
-        int tempScore=0;
-        if (m_score1==m_score2)
-        {
-            switch (m_score1)
-            {
-                case 0:
-                        score = "Love-All";
-                    break;
-                case 1:
-                        score = "Fifteen-All";
-                    break;
-                case 2:
-                        score = "Thirty-All";
-                    break;
-                default:
-                        score = "Deuce";
-                    break;
-                
-            }
-        }
-        else if (m_score1>=4 || m_score2>=4)
-        {
-            int minusResult = m_score1-m_score2;
-            if (minusResult==1) score ="Advantage player1";
-            else if (minusResult ==-1) score ="Advantage player2";
-            else if (minusResult>=2) score = "Win for player1";
-            else score ="Win for player2";
-        }
-        else
-        {
-            for (int i=1; i<3; i++)
-            {
-                if (i==1) tempScore = m_score1;
-                else { score+="-"; tempScore = m_score2;}
-                switch(tempScore)
-                {
-                    case 0:
-                        score+="Love";
-                        break;
-                    case 1:
-                        score+="Fifteen";
-                        break;
-                    case 2:
-                        score+="Thirty";
-                        break;
-                    case 3:
-                        score+="Forty";
-                        break;
-                }
-            }
-        }
-        return score;
+    	
+    	if (score1 == score2)
+        	return parity(score1);
+    	
+        if (score1>=4 || score2>=4)
+        	return advantageOrWin() + " " + winningPlayer();
+        
+        return calculateRunningScoreString();
     }
+
+	private String calculateRunningScoreString() {
+		return runningScore(score1) + "-" + runningScore(score2);
+	}
+
+	private String runningScore(int value) {
+		if (value == 0)
+			return "Love";
+		if (value == 1)
+			return "Fifteen";
+		if (value == 2)
+			return "Thirty";
+		if (value == 3)
+			return "Forty";
+		else
+			return "";
+	}
+
+	private String parity(int score) {
+		if(score >= 3)
+			return "Deuce";
+		return runningScore(score) + "-All";
+	}
+
+	private String advantageOrWin() {
+		if (isWiningScore()) 
+			return "Win for";
+		else 
+			return "Advantage";
+	}
+
+	private String winningPlayer() {
+		if (score1 > score2)
+			return player1Name;
+		else
+			return player2Name;
+	}
+
+	private boolean isWiningScore() {
+		return Math.abs(score1-score2) >= 2;
+	}
 }
+ /*
+			SCRATCHBOOK
+			
+		-wonPoint wrong condition "player1" !!?!?	OK	OK
+		-m_score name is ugly	OK	OK
+		-wonPoint might be ugly <<-- Interface (is it ok to change that?)
+		-getScore is weird and difficult to understand.	OK	OK
+		-is there no forty-all? <<- Misunderstanding, solved ;)
+		-advantageOrWin is too complex? does it solve 2 functions?	OK	OK
+		-math.abs in conditional looks terrible	OK	OK
+		-Running score switch doesn't look compact enough	OK	OK
+		-That useless For cycle in the running Score calculation	OK	OK
+		-Can I map Love, Fifteen, Thirty in a map? is it worth?
+		-parity calculation duplicates the Love, Fifteen, Thirty information...	OK	OK
+		
+*/
